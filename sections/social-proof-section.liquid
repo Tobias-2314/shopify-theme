@@ -1,16 +1,161 @@
 {% schema %}
 {
-  "name": "Social Proof React",
+  "name": "Social Proof Dynamic",
   "settings": [
     {
       "type": "text",
       "id": "title",
       "label": "Section Title",
-      "default": "Lo que dicen de nosotros "
+      "default": "Lo que dicen de nosotros"
     }
   ],
-  "presets": [{ "name": "Social Proof React" }]
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product_ref",
+          "label": "Linked Product",
+          "info": "Shows a small thumbnail of the product."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author Name",
+          "default": "Maria Gonzalez"
+        },
+        {
+          "type": "text",
+          "id": "time",
+          "label": "Time ago",
+          "default": "hace 2h"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Review Text",
+          "default": "¡Increíble calidad! Me encanta."
+        },
+        {
+          "type": "header",
+          "content": "Visuals"
+        },
+        {
+          "type": "color",
+          "id": "avatar_color",
+          "label": "Avatar Color",
+          "default": "#3B82F6"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social Proof Dynamic",
+      "blocks": [{ "type": "review" }, { "type": "review" }, { "type": "review" }]
+    }
+  ]
 }
+{% endschema %}
+
+<section class="py-20 bg-gray-50 overflow-hidden relative">
+  <div class="container relative z-10">
+    <!-- Heading -->
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold mb-4">{{ section.settings.title }}</h2>
+      <div class="flex justify-center gap-2 mb-2">
+        {% for i in (1..5) %}
+          <svg class="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        {% endfor %}
+      </div>
+      <p class="text-gray-600">4.9/5 basado en +10,000 reseñas verificadas</p>
+    </div>
+
+    <!-- Reviews Grid -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      style="max-width: 1150px; margin: 0 auto;"
+    >
+      {% for block in section.blocks %}
+        {% assign product = all_products[block.settings.product_ref] %}
+
+        <div class="review-card relative bg-white rounded-[20px] p-6 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group">
+          <!-- Link to Product (Full Card Click) -->
+          {% if product != empty %}
+            <a href="{{ product.url }}" class="absolute inset-0 z-20" aria-label="View Product"></a>
+          {% endif %}
+
+          <!-- Shine Effect -->
+          <div
+            class="absolute inset-0 translate-x-[-100%] group-hover:animate-shine bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none z-10"
+          ></div>
+
+          <!-- Header -->
+          <div class="flex items-start gap-4 mb-4 relative z-0">
+            <div
+              class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md"
+              style="background-color: {{ block.settings.avatar_color }}"
+            >
+              {{ block.settings.author | slice: 0 }}
+            </div>
+            <div class="flex-1">
+              <h4 class="font-bold text-lg">{{ block.settings.author }}</h4>
+              <span class="text-xs text-gray-400">{{ block.settings.time }}</span>
+            </div>
+
+            <!-- Product Thumbnail -->
+            {% if product != empty %}
+              <div class="w-12 h-12 rounded-lg overflow-hidden border border-gray-100 shadow-sm ml-auto">
+                {{ product.featured_image | image_url: width: 100 | image_tag: class: 'w-full h-full object-cover' }}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Content -->
+          <p class="text-gray-600 text-sm mb-4 leading-relaxed relative z-0">
+            {{ block.settings.text }}
+          </p>
+
+          <!-- Verified Badge -->
+          <div class="flex items-center gap-1 text-green-600 text-xs font-bold uppercase tracking-wide relative z-0">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Compra verificada
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.blocks.size == 0 %}
+      <div class="text-center text-gray-400 py-10">Agrega reseñas desde el editor.</div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  @keyframes shine {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  .group-hover\:animate-shine:hover {
+    animation: shine 1s;
+  }
+
+  /* Additional shadow refinement */
+  .review-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* Simple shadow defaults */
+  }
+  .review-card:hover {
+    transform: translateY(-5px);
+  }
+</style>
+"label": "Section Title", "default": "Lo que dicen de nosotros " } ], "presets": [{ "name": "Social Proof React" }] }
 {% endschema %}
 
 <section class="py-20 bg-gray-50">

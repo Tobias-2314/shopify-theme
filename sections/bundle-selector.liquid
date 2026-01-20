@@ -1,6 +1,234 @@
 {% comment %}
-  Section: Bundle Selector (Based on React Component)
+  Section: Bundle Selector (Blocks)
 {% endcomment %}
+
+<div
+  class="bundle-selector-wrapper max-w-2xl mx-auto p-4"
+  id="bundle-selector-{{ section.id }}"
+>
+  {% if section.blocks.size == 0 %}
+    <div class="text-center py-12 bg-red-50 text-red-700 rounded-lg">
+      <p class="font-bold">⚠️ Configuración Requerida</p>
+      <p>Agrega bloques de 'Pack' en el editor del tema.</p>
+    </div>
+  {% else %}
+    <!-- Bundle Options -->
+    <div class="bundles-container flex flex-col gap-4 mb-8">
+      {% for block in section.blocks %}
+        {% assign product = all_products[block.settings.product] %}
+        {% assign variant = product.selected_or_first_available_variant %}
+        {% assign title = block.settings.title | default: product.title | default: 'Pack Opción' %}
+
+        {% if product != empty %}
+          <div
+            class="bundle-option relative bg-white border-2 border-transparent rounded-xl p-4 cursor-pointer transition-all duration-300 transform hover:scale-[1.01]"
+            onclick="selectBundle(this, '{{ variant.id }}', {{ variant.price }})"
+            data-variant-id="{{ variant.id }}"
+            data-price="{{ variant.price }}"
+            {{ block.shopify_attributes }}
+          >
+            {% if block.settings.badge_text != blank %}
+              <div
+                class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10"
+                style="background-color: {{ block.settings.badge_color }};"
+              >
+                {{ block.settings.badge_text }}
+              </div>
+            {% endif %}
+
+            <div class="flex items-center gap-4">
+              <!-- Radio Indicator -->
+              <div class="radio-indicator w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center transition-colors">
+                <div class="dot w-3 h-3 rounded-full bg-white opacity-0 transition-opacity"></div>
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1">
+                <h3 class="font-bold text-lg text-gray-900">{{ title }}</h3>
+                {% if block.settings.subtitle != blank %}
+                  <p class="text-xs text-gray-500">{{ block.settings.subtitle }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Price -->
+              <div class="text-right">
+                {% if product.compare_at_price > product.price %}
+                  <p class="text-xs text-gray-400 line-through">{{ product.compare_at_price | money }}</p>
+                {% endif %}
+                <p class="text-xl font-bold text-gray-900">{{ product.price | money }}</p>
+              </div>
+            </div>
+
+            <!-- Hidden Input for Form Submission compliance if needed -->
+            <input type="hidden" name="id" value="{{ variant.id }}" disabled>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- Total Price Display & CTA -->
+    <div class="border-t pt-6">
+      <div class="flex justify-between items-center mb-4 text-xl font-bold">
+        <span>Total:</span>
+        <span id="total-price-display">$0.00</span>
+      </div>
+
+      <button
+        id="add-to-cart-btn"
+        class="w-full bg-black text-white text-lg font-bold py-4 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        onclick="addToCart()"
+        disabled
+      >
+        <span class="relative z-10">AGREGAR AL CARRITO</span>
+        <div
+          class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+        ></div>
+      </button>
+
+      <div class="flex justify-center gap-4 mt-4 text-xs text-gray-500">
+        <span>🔒 Pago Seguro</span>
+        <span>⚡ Envío Rápido</span>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .bundle-option.active-pack {
+    border-color: black;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-high */
+    transform: scale(1.03);
+  }
+  .bundle-option.active-pack .radio-indicator {
+    border-color: black;
+    background-color: black;
+  }
+  .bundle-option.active-pack .radio-indicator .dot {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  let selectedVariantId = null;
+
+  function selectBundle(element, variantId, priceCents) {
+    // Styling
+    document.querySelectorAll('.bundle-option').forEach((el) => el.classList.remove('active-pack'));
+    element.classList.add('active-pack');
+
+    // Logic
+    selectedVariantId = variantId;
+
+    // Update Price
+    const moneyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }); // Simplified for demo
+    // Ideally use Shopifys Money Format formatMoney(priceCents, "{{ shop.money_format }}")
+    // For now simple formatter:
+    document.getElementById('total-price-display').innerText = (priceCents / 100).toLocaleString('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    // Enable Button
+    document.getElementById('add-to-cart-btn').disabled = false;
+  }
+
+  function addToCart() {
+    if (!selectedVariantId) return;
+
+    const btn = document.getElementById('add-to-cart-btn');
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = '<span class="relative z-10">PROCESANDO...</span>';
+    btn.disabled = true;
+
+    const items = [
+      {
+        id: selectedVariantId,
+        quantity: 1,
+      },
+    ];
+
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ items }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Redirect to checkout or open drawer
+        window.location.href = '/checkout';
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        btn.innerHTML = '<span class="relative z-10">ERROR</span>';
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }, 2000);
+      });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Bundle Selector (Blocks)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Bundle Configuration"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pack",
+      "name": "Pack Option",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Display Title",
+          "info": "Overrides product title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "Ahorra un 10%"
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge Text (Optional)",
+          "default": "MEJOR VALOR"
+        },
+        {
+          "type": "color",
+          "id": "badge_color",
+          "label": "Badge Color",
+          "default": "#2563EB"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Selector (Blocks)",
+      "blocks": [
+        { "type": "pack", "settings": { "badge_text": "" } },
+        { "type": "pack", "settings": { "badge_text": "MÁS VENDIDO" } },
+        { "type": "pack", "settings": { "badge_text": "MAYOR AHORRO" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
 
 {% assign target_product = all_products[section.settings.product_ref] | default: product %}
 

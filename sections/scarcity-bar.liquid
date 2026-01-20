@@ -1,22 +1,186 @@
 {% schema %}
 {
-  "name": "Scarcity Bar React",
+  "name": "Scarcity Bar Advanced",
   "settings": [
     {
-      "type": "number",
-      "id": "stock_level",
-      "label": "Initial Stock Level",
-      "default": 47
+      "type": "product",
+      "id": "linked_product",
+      "label": "Linked Product for Stock",
+      "info": "Values found here will drive the stock counter."
     },
     {
-      "type": "number",
+      "type": "range",
+      "id": "stock_threshold",
+      "min": 1,
+      "max": 100,
+      "label": "Stock Threshold (Max displayed)",
+      "default": 50
+    },
+    {
+      "type": "range",
       "id": "timer_minutes",
-      "label": "Timer Duration (minutes)",
+      "min": 1,
+      "max": 60,
+      "label": "Timer Duration (Minutes)",
       "default": 10
     }
   ],
-  "presets": [{ "name": "Scarcity Bar React" }]
+  "presets": [{ "name": "Scarcity Bar Advanced" }]
 }
+{% endschema %}
+
+{% assign product = all_products[section.settings.linked_product] %}
+{% assign initial_stock = product.selected_or_first_available_variant.inventory_quantity
+  | default: section.settings.stock_threshold
+%}
+{% if initial_stock <= 0 %}{% assign initial_stock = 10 %}{% endif %}
+
+<section
+  class="py-8 bg-black text-white relative overflow-hidden transition-all duration-500"
+  id="scarcity-section-{{ section.id }}"
+>
+  <!-- Background Animated Gradient (Subtle) -->
+  <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-black to-gray-900 opacity-80 z-0"></div>
+
+  <div class="container relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center" style="max-width: 1024px; margin: 0 auto;">
+      <!-- Hot Status -->
+      <div class="flex items-center justify-center gap-4 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+        <span class="text-4xl animate-pulse">🔥</span>
+        <div class="text-left">
+          <p class="font-bold text-lg leading-none mb-1">ALTA DEMANDA</p>
+          <p class="text-xs text-gray-400">Todo el mundo quiere uno</p>
+        </div>
+      </div>
+
+      <!-- Live Stock Bar -->
+      <div class="flex flex-col justify-center bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 relative overflow-hidden">
+        <div class="flex justify-between items-end mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Stock Restante</span>
+          <span class="text-xl font-bold font-mono text-white">
+            <span id="stock-counter">{{ initial_stock }}</span> Unidades
+          </span>
+        </div>
+
+        <!-- Animated Gradient Bar container -->
+        <div class="w-full h-4 bg-gray-800 rounded-full overflow-hidden relative">
+          <div
+            class="absolute left-0 top-0 h-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 animate-gradient-x"
+            style="width: 80%; background-size: 200% 200%;"
+            id="stock-progress-bar"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Viewers & Timer -->
+      <div class="flex items-center justify-center gap-4 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+        <div class="text-center">
+          <p class="text-xs text-gray-400 mb-1">Oferta expira en:</p>
+          <div class="font-mono text-2xl font-bold text-red-400" id="timer-display">00:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  @keyframes gradient-x {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  .animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+  }
+
+  /* Neon Border Effect */
+  .neon-border-urgent {
+    border: 2px solid #ef4444 !important; /* Red-500 */
+    box-shadow: 0 0 10px #ef4444, inset 0 0 10px #ef4444;
+    animation: pulse-neon 2s infinite;
+  }
+
+  @keyframes pulse-neon {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+</style>
+
+<script>
+  // Setup
+  const durationMinutes = {{ section.settings.timer_minutes }};
+  const stockMax = {{ section.settings.stock_threshold }};
+  let currentStock = {{ initial_stock }};
+  let timeLeft = durationMinutes * 60;
+  
+  const sectionEl = document.getElementById('scarcity-section-{{ section.id }}');
+  const timerDisplay = document.getElementById('timer-display');
+  const stockCounter = document.getElementById('stock-counter');
+  const stockBar = document.getElementById('stock-progress-bar');
+
+  // Update Stock Bar Width
+  function updateStockVisuals() {
+      const pct = Math.max(0, Math.min(100, (currentStock / stockMax) * 100));
+      stockBar.style.width = pct + '%';
+      
+      // Color logic based on pct
+      if(pct < 30) {
+          stockBar.className = "absolute left-0 top-0 h-full bg-gradient-to-r from-red-600 to-red-500 animate-pulse";
+      }
+  }
+
+  // Timer Logic
+  const timerInterval = setInterval(() => {
+    timeLeft--;
+    
+    // Format mm:ss
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    timerDisplay.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+    // Neon Border Check (< 5 mins)
+    if (m < 5) {
+        sectionEl.classList.add('neon-border-urgent');
+        // Make timer redder
+        timerDisplay.classList.add('text-red-600');
+    } else {
+        sectionEl.classList.remove('neon-border-urgent');
+    }
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerDisplay.innerText = "00:00";
+    }
+  }, 1000);
+
+  // Stock Simulation (Decrement occasionally)
+  setInterval(() => {
+    if (currentStock > 2) {
+        // Random decrement
+        if (Math.random() > 0.7) {
+            currentStock--;
+            stockCounter.innerText = currentStock;
+            updateStockVisuals();
+        }
+    }
+  }, 5000);
+  
+  // Initial draw
+  updateStockVisuals();
+</script>
+"id": "stock_level", "label": "Initial Stock Level", "default": 47 }, { "type": "number", "id": "timer_minutes",
+"label": "Timer Duration (minutes)", "default": 10 } ], "presets": [{ "name": "Scarcity Bar React" }] }
 {% endschema %}
 
 <section class="py-12 bg-gradient-scarcity text-white">

@@ -1,0 +1,217 @@
+{% schema %}
+{
+  "name": "Linked Product Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Nuestros Favoritos"
+    },
+    {
+      "type": "select",
+      "id": "depth_style",
+      "label": "Card Style",
+      "options": [
+        { "value": "glass", "label": "Glassmorphism" },
+        { "value": "brutal", "label": "Neo-Brutalism" },
+        { "value": "flat", "label": "Flat" }
+      ],
+      "default": "glass"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Title (Optional)"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "label": "Star Rating",
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Linked Product Grid",
+      "blocks": [{ "type": "product_card" }, { "type": "product_card" }, { "type": "product_card" }]
+    }
+  ]
+}
+{% endschema %}
+
+<section class="py-16 relative overflow-hidden">
+  {% if section.settings.depth_style == 'glass' %}
+    <div
+      class="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-purple-50 via-white to-blue-50 -z-10 pointer-events-none"
+    ></div>
+  {% endif %}
+
+  <div class="container mx-auto px-4 relative z-10">
+    <h2 class="text-4xl font-bold text-center mb-12">{{ section.settings.heading }}</h2>
+
+    {% if section.blocks.size > 0 %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for block in section.blocks %}
+          {% assign product = all_products[block.settings.product] %}
+          {% assign image = block.settings.custom_image | default: product.featured_image %}
+          {% assign title = block.settings.custom_title | default: product.title | default: 'Selecciona un Producto' %}
+
+          <div
+            class="
+              product-card group relative h-full flex flex-col
+              {% if section.settings.depth_style == 'glass' %} glass-card rounded-2xl p-6 transition-all duration-300 hover:shadow-high hover:-translate-y-2
+              {% elsif section.settings.depth_style == 'brutal' %} bg-white border-2 border-black shadow-[4px_4px_0px_#000] p-6 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all
+              {% else %} bg-white rounded-xl shadow-md p-6
+              {% endif %}
+            "
+          >
+            <!-- Image -->
+            <div class="relative aspect-square mb-6 overflow-hidden rounded-xl bg-gray-100">
+              <a href="{{ product.url | default: '#' }}">
+                {% if image %}
+                  {{
+                    image
+                    | image_url: width: 600
+                    | image_tag:
+                      class: 'w-full h-full object-cover transition-transform duration-700 group-hover:scale-110'
+                  }}
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover text-gray-300' }}
+                {% endif %}
+              </a>
+
+              <!-- Badges -->
+              {% if product.available == false %}
+                <span class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-sm"
+                  >AGOTADO</span
+                >
+              {% elsif product.compare_at_price > product.price %}
+                <span class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded shadow-sm"
+                  >OFERTA</span
+                >
+              {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 flex flex-col">
+              <!-- Stars -->
+              <div class="flex text-yellow-400 mb-2 text-sm">
+                {% assign rating = block.settings.rating %}
+                {% for i in (1..5) %}
+                  {% if i <= rating %} ★ {% else %} ☆ {% endif %}
+                {% endfor %}
+              </div>
+
+              <h3 class="text-xl font-bold mb-2 leading-tight">
+                <a href="{{ product.url | default: '#' }}" class="hover:underline">{{ title }}</a>
+              </h3>
+
+              <div class="mt-auto pt-4 flex items-center justify-between">
+                <div>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="text-xs text-gray-500 line-through block">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                  <span class="text-lg font-bold text-gray-900 block">
+                    {% if product.price %} {{ product.price | money }} {% else %} $0.00 {% endif %}
+                  </span>
+                </div>
+
+                {% if product.available %}
+                  <form
+                    method="post"
+                    action="/cart/add"
+                    class="add-to-cart-form block"
+                    onsubmit="event.preventDefault(); addToCartAjax(this);"
+                  >
+                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                    <button
+                      type="submit"
+                      class="
+                        px-4 py-2 text-sm font-bold transition-transform active:scale-95
+                        {% if section.settings.depth_style == 'brutal' %} bg-black text-white hover:bg-gray-800 border border-black
+                        {% else %} bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-md hover:shadow-lg
+                        {% endif %}
+                      "
+                    >
+                      Comprar
+                    </button>
+                  </form>
+                {% else %}
+                  <button
+                    disabled
+                    class="px-4 py-2 bg-gray-200 text-gray-500 text-sm font-bold rounded cursor-not-allowed"
+                  >
+                    Agotado
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-12 text-gray-500">
+        <p>Agrega bloques de 'Product Card' en el editor del tema para ver contenido aquí.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function addToCartAjax(form) {
+      const formData = new FormData(form);
+      const btn = form.querySelector('button');
+      const originalText = btn.innerHTML;
+
+      btn.innerHTML = 'Agregando...';
+      btn.disabled = true;
+
+      fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          btn.innerHTML = '¡Listo!';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 2000);
+          // Optional: Open Cart Drawer or Update Cart Count here
+          // If there's a global event for cart update, dispatch it
+          window.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true }));
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          btn.innerHTML = 'Error';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 2000);
+        });
+    }
+  </script>
+</section>
