@@ -1,0 +1,67 @@
+{% schema %}
+{
+  "name": "Scarcity Bar React",
+  "settings": [],
+  "presets": [{ "name": "Scarcity Bar React" }]
+}
+{% endschema %}
+
+<section class="py-12 bg-gradient-scarcity text-white">
+  <div class="container">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" style="max-width: 1024px; margin: 0 auto;">
+      <!-- Hot Product -->
+      <div class="bg-white-10 backdrop-blur-sm rounded-xl p-6 text-center">
+        <div class="mb-3 flex justify-center">
+          <span style="font-size: 2.5rem;">🔥</span>
+        </div>
+        <p class="text-3xl font-bold mb-2">HOT</p>
+        <p class="text-sm text-white" style="opacity: 0.9;">Producto más vendido del mes</p>
+      </div>
+
+      <!-- Stock Alert -->
+      <div class="bg-white-10 backdrop-blur-sm rounded-xl p-6 text-center">
+        <div class="mb-3 flex justify-center">
+          <!-- Trending Up Icon -->
+          <svg class="w-10 h-10" style="width: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold mb-2"><span id="stock-count">47</span> unidades</p>
+        <p class="text-sm text-white" style="opacity: 0.9;">Quedan pocas en stock</p>
+      </div>
+
+      <!-- Live Viewers -->
+      <div class="bg-white-10 backdrop-blur-sm rounded-xl p-6 text-center">
+        <div class="mb-3 flex justify-center">
+          <!-- Users Icon -->
+          <svg class="w-10 h-10" style="width: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </div>
+        <p class="text-3xl font-bold mb-2"><span id="viewers-count">234</span> personas</p>
+        <p class="text-sm text-white" style="opacity: 0.9;">Viendo este producto ahora</p>
+      </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="mt-8 text-center bg-white-10 rounded-xl p-4 inline-block w-full">
+      <p class="text-2xl font-bold">⚠️ ¡No esperes más! La oferta termina cuando se agote el stock</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Stock Simulation
+  let stock = 47;
+  setInterval(() => {
+    stock--;
+    if (stock < 15) stock = 47;
+    document.getElementById('stock-count').innerText = stock;
+  }, 45000);
+
+  // Viewers Simulation
+  setInterval(() => {
+    const viewers = Math.floor(Math.random() * (350 - 180) + 180);
+    document.getElementById('viewers-count').innerText = viewers;
+  }, 3000);
+</script>

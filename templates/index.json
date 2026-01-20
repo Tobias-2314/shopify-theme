@@ -1,0 +1,42 @@
+{
+    "sections": {
+        "hero": {
+            "type": "hero-split",
+            "settings": {
+                "heading": "The Last Phone Case You'll Ever Buy.",
+                "text": "Ultra-thin, extensive protection, and built-in NFC technology.",
+                "button_text": "Shop Now"
+            }
+        },
+        "scarcity": {
+            "type": "scarcity-bar",
+            "settings": {
+                "stock_level": 15,
+                "timer_minutes": 10
+            }
+        },
+        "features": {
+            "type": "bento-grid",
+            "settings": {
+                "title": "Why Silkify?"
+            }
+        },
+        "social": {
+            "type": "social-proof",
+            "settings": {
+                "title": "Trusted by 50,000+ Customers"
+            }
+        },
+        "bundle_section": {
+            "type": "bundle-selector",
+            "settings": {}
+        }
+    },
+    "order": [
+        "hero",
+        "scarcity",
+        "social",
+        "features",
+        "bundle_section"
+    ]
+}

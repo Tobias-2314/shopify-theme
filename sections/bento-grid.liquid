@@ -1,0 +1,98 @@
+{% schema %}
+{
+  "name": "Bento Grid React",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "TECNOLOGÍA DE VANGUARDIA"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bento Grid React"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="py-20 bg-white">
+  <div class="container">
+    <h2 class="text-4xl font-bold text-center mb-12">
+      {{ section.settings.title }}
+    </h2>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" style="max-width: 1150px; margin: 0 auto;">
+      <!-- Card 1: Protección -->
+      <div class="relative overflow-hidden rounded-2xl" style="height: 350px;">
+        <img
+          src="https://images.unsplash.com/photo-1662350689147-3d6c67b7cd10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+          class="w-full h-full object-cover"
+        >
+        <div class="absolute inset-0 bg-gradient-overlay"></div>
+        <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
+          <!-- Shield Icon -->
+          <svg
+            class="w-8 h-8 mb-3"
+            style="width:2rem; height:2rem;"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          <h3 class="text-2xl font-bold mb-2">PROTECCIÓN</h3>
+          <p class="text-sm text-gray-200">Tecnología avanzada de protección</p>
+        </div>
+      </div>
+
+      <!-- Card 2: Precisión (Taller in desktop if row-span supported via grid-row: span 2) -->
+      <div class="relative overflow-hidden rounded-2xl" style="height: 350px;">
+        <img
+          src="https://images.unsplash.com/photo-1762463463919-a76009430ac5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+          class="w-full h-full object-cover"
+        >
+        <div class="absolute inset-0 bg-gradient-overlay"></div>
+        <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
+          <!-- Zap Icon -->
+          <svg
+            class="w-8 h-8 mb-3"
+            style="width:2rem; height:2rem;"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <h3 class="text-2xl font-bold mb-2">PRECISIÓN</h3>
+          <p class="text-sm text-gray-200">Máxima precisión y rendimiento</p>
+        </div>
+      </div>
+
+      <!-- Card 3: Ergonomía -->
+      <div class="relative overflow-hidden rounded-2xl" style="height: 350px;">
+        <img
+          src="https://images.unsplash.com/photo-1764831138635-35873bdd671e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+          class="w-full h-full object-cover"
+        >
+        <div class="absolute inset-0 bg-gradient-overlay"></div>
+        <div class="absolute inset-0 p-6 flex flex-col justify-end text-white">
+          <!-- Target Icon -->
+          <svg
+            class="w-8 h-8 mb-3"
+            style="width:2rem; height:2rem;"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 11.08V12a10 10 0 11-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h3 class="text-2xl font-bold mb-2">ERGONOMÍA</h3>
+          <p class="text-sm text-gray-200">Diseño ergonómico y confortable</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
