@@ -136,25 +136,21 @@
           </div>
         {% endif %}
 
-        <!-- Image Container -->
+        <!-- Image Container (Glass + Float) -->
         <div
           class="
-            relative w-full aspect-square md:aspect-[4/5] overflow-hidden bg-white
-            {% if section.settings.depth_level == 'brutal' %} border-4 border-black shadow-[8px_8px_0px_#000]
-            {% else %} rounded-[2rem] shadow-2xl
-            {% endif %}
+            relative w-full aspect-square md:aspect-[4/5] glass-card rounded-[2rem] p-4 flex items-center justify-center animate-float-3d transition-all duration-500
+            {% if section.settings.depth_level == 'brutal' %} border-4 border-black shadow-[8px_8px_0px_#000] rounded-none {% endif %}
           "
         >
           {% if featured_image %}
             {{
               featured_image
               | image_url: width: 1000
-              | image_tag:
-                class: 'w-full h-full object-cover hover:scale-105 transition-transform duration-700',
-                loading: 'eager'
+              | image_tag: class: 'w-full h-full object-cover rounded-2xl shadow-med', loading: 'eager'
             }}
           {% else %}
-            {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover bg-gray-100' }}
+            {{ 'product-1' | placeholder_svg_tag: 'w-full h-full object-cover rounded-2xl bg-gray-100' }}
           {% endif %}
         </div>
 
