@@ -1,0 +1,100 @@
+/* 
+  Depth System & Micro-interactions 
+  Mission: Glassmorphism / Neo-brutalism / Depth
+*/
+
+:root {
+    /* Level 1: Subtle Depth (Cards, Basic Containers) */
+    --depth-1-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --depth-1-border: 1px solid rgba(0, 0, 0, 0.05);
+
+    /* Level 2: Glassmorphism (Sticky Bars, Headers, Overlays) */
+    --depth-2-blur: blur(12px);
+    --depth-2-bg: rgba(255, 255, 255, 0.75);
+    --depth-2-border: 1px solid rgba(255, 255, 255, 0.3);
+    --depth-2-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+
+    /* Level 3: Floating / Popover (Modals, Hover states) */
+    --depth-3-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    /* Neo-Brutalism Accents */
+    --brutal-border: 2px solid #000;
+    --brutal-shadow: 4px 4px 0px #000;
+}
+
+/* --- Utility Classes --- */
+
+/* Glassmorphism */
+.glass-panel {
+    background: var(--depth-2-bg);
+    backdrop-filter: var(--depth-2-blur);
+    -webkit-backdrop-filter: var(--depth-2-blur);
+    border: var(--depth-2-border);
+    box-shadow: var(--depth-2-shadow);
+}
+
+/* Depth Cards */
+.depth-card {
+    background: white;
+    border: var(--depth-1-border);
+    box-shadow: var(--depth-1-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.depth-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--depth-3-shadow);
+}
+
+/* Neo-Brutalism Button Variant */
+.btn-brutal {
+    border: var(--brutal-border);
+    box-shadow: var(--brutal-shadow);
+    transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.btn-brutal:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000;
+}
+
+.btn-brutal:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000;
+}
+
+/* Micro-interactions */
+.hover-zoom-img {
+    overflow: hidden;
+}
+
+.hover-zoom-img img {
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-zoom-img:hover img {
+    transform: scale(1.05);
+}
+
+.magnetic-cta {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.magnetic-cta:hover {
+    transform: scale(1.03);
+}
+
+/* Text Gradient Animation */
+.text-gradient-animated {
+    background: linear-gradient(to right, #9333EA, #DB2777, #9333EA);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+}
+
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
