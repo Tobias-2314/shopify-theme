@@ -1,0 +1,58 @@
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Messages (Pipeline separated)",
+      "default": "🚀 Aumento del AOV en un 50% | ⚡ Envío GRATIS en pedidos +29€ | 💎 Oferta limitada - Solo hoy"
+    }
+  ]
+}
+{% endschema %}
+
+{% assign messages = section.settings.text | split: '|' %}
+
+<div class="announcement-bar" role="region" aria-label="Announcement">
+  <div class="marquee-content">
+    {% for i in (1..4) %}
+      {% for message in messages %}
+        <span class="marquee-item">{{ message }}</span>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .announcement-bar {
+    background-color: #000;
+    color: #fff;
+    padding: 0.5rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 51;
+  }
+
+  .marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+  }
+
+  .marquee-item {
+    display: inline-block;
+    padding: 0 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+</style>
