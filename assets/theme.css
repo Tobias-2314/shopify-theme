@@ -634,7 +634,9 @@ a {
   justify-content: center;
 }
 
-background-color: var(--color-green-500);
+.upsell-box.active .checkbox-square {
+  border-color: var(--color-green-500);
+  background-color: var(--color-green-500);
 }
 
 /* --- ANIMATIONS --- */
