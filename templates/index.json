@@ -22,7 +22,7 @@
             }
         },
         "social": {
-            "type": "social-proof",
+            "type": "social-proof-section",
             "settings": {
                 "title": "Trusted by 50,000+ Customers"
             }
