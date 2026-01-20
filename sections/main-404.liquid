@@ -1,0 +1,32 @@
+{% schema %}
+{
+  "name": "404 Page",
+  "settings": [],
+  "presets": []
+}
+{% endschema %}
+
+<section class="py-20 bg-white text-center min-h-[60vh] flex flex-col items-center justify-center">
+  <div class="container">
+    <h1 class="text-4xl font-bold mb-6">404 - Página no encontrada</h1>
+    <p class="text-gray-600 text-lg mb-8">Lo sentimos, la página que buscas no existe o ha sido movida.</p>
+
+    <a
+      href="/"
+      class="btn-primary inline-flex items-center justify-center"
+      style="max-width: 300px; text-decoration: none;"
+    >
+      Volver al Inicio
+    </a>
+  </div>
+</section>
+
+<style>
+  /* Ensure min-height works if Tailwind not fully loaded */
+  .min-h-\[60vh\] {
+    min-height: 60vh;
+  }
+  .flex-col {
+    flex-direction: column;
+  }
+</style>
