@@ -1,7 +1,20 @@
 {% schema %}
 {
   "name": "Scarcity Bar React",
-  "settings": [],
+  "settings": [
+    {
+      "type": "number",
+      "id": "stock_level",
+      "label": "Initial Stock Level",
+      "default": 47
+    },
+    {
+      "type": "number",
+      "id": "timer_minutes",
+      "label": "Timer Duration (minutes)",
+      "default": 10
+    }
+  ],
   "presets": [{ "name": "Scarcity Bar React" }]
 }
 {% endschema %}
@@ -21,19 +34,19 @@
       <!-- Stock Alert -->
       <div class="bg-white-10 backdrop-blur-sm rounded-xl p-6 text-center">
         <div class="mb-3 flex justify-center">
-          <!-- Trending Up Icon -->
           <svg class="w-10 h-10" style="width: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
           </svg>
         </div>
-        <p class="text-3xl font-bold mb-2"><span id="stock-count">47</span> unidades</p>
+        <p class="text-3xl font-bold mb-2">
+          <span id="stock-count">{{ section.settings.stock_level }}</span> unidades
+        </p>
         <p class="text-sm text-white" style="opacity: 0.9;">Quedan pocas en stock</p>
       </div>
 
       <!-- Live Viewers -->
       <div class="bg-white-10 backdrop-blur-sm rounded-xl p-6 text-center">
         <div class="mb-3 flex justify-center">
-          <!-- Users Icon -->
           <svg class="w-10 h-10" style="width: 2.5rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
           </svg>
@@ -52,10 +65,10 @@
 
 <script>
   // Stock Simulation
-  let stock = 47;
+  let stock = {{ section.settings.stock_level }};
   setInterval(() => {
     stock--;
-    if (stock < 15) stock = 47;
+    if (stock < 5) stock = {{ section.settings.stock_level }};
     document.getElementById('stock-count').innerText = stock;
   }, 45000);
 

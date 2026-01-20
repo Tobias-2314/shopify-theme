@@ -3,6 +3,24 @@
   "name": "Hero Split React",
   "settings": [
     {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tecnología Premium Al Mejor Precio"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Subheading",
+      "default": "Eleva tu experiencia con tecnología de vanguardia. Diseño elegante, calidad superior y resultados garantizados."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Ver Ofertas"
+    },
+    {
       "type": "image_picker",
       "id": "image",
       "label": "Product Image"
@@ -19,7 +37,7 @@
 <section class="hero-section">
   <div class="container">
     <div class="hero-grid">
-      <!-- Left Column: Image (Order 2 on Mobile, 1 on Desktop) -->
+      <!-- Left Column: Image -->
       <div class="relative order-2 lg:order-1">
         <!-- Badge -->
         <div class="absolute" style="top: -1rem; left: -1rem; z-index: 10;">
@@ -33,7 +51,6 @@
           {% if section.settings.image %}
             {{ section.settings.image | image_url: width: 1000 | image_tag: class: 'w-full h-auto', loading: 'eager' }}
           {% else %}
-            <!-- Fallback Image from React Code -->
             <img
               src="https://images.unsplash.com/photo-1676914333302-53615f404416?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
               alt="Producto Premium"
@@ -42,10 +59,9 @@
           {% endif %}
         </div>
 
-        <!-- Floating Stats -->
+        <!-- Floating Stats (kept hardcoded for visual fidelity as requested) -->
         <div class="floating-stats">
           <div class="flex items-center gap-2">
-            <!-- Star Icon -->
             <svg
               class="w-5 h-5"
               style="color: var(--color-yellow-400); fill: var(--color-yellow-400); width: 1.25rem;"
@@ -60,7 +76,6 @@
           </div>
           <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
           <div class="flex items-center gap-2">
-            <!-- Trending Icon -->
             <svg
               class="w-5 h-5"
               style="color: var(--color-green-600); width: 1.25rem;"
@@ -78,7 +93,7 @@
         </div>
       </div>
 
-      <!-- Right Column: Info & Selector (Order 1 on Mobile, 2 on Desktop) -->
+      <!-- Right Column: Info & Selector -->
       <div class="order-1 lg:order-2">
         <div class="mb-6">
           <span class="inline-block bg-black text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
@@ -86,13 +101,11 @@
           </span>
 
           <h1 class="text-4xl font-bold mb-4 leading-tight" style="font-size: 2.5rem; line-height: 1.1;">
-            Tecnología Premium
-            <span class="block text-gradient"> Al Mejor Precio </span>
+            {{ section.settings.heading }}
           </h1>
 
           <p class="text-lg text-gray-600 mb-6" style="font-size: 1.125rem;">
-            Eleva tu experiencia con tecnología de vanguardia. Diseño elegante, calidad superior y resultados
-            garantizados.
+            {{ section.settings.text }}
           </p>
 
           <!-- Trust Indicators -->
