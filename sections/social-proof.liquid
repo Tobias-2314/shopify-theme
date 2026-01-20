@@ -1,8 +1,14 @@
 {% schema %}
 {
   "name": "Social Proof React",
-  "settings": [],
-  "elements": [],
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Lo que dicen de nosotros"
+    }
+  ],
   "presets": [{ "name": "Social Proof React" }]
 }
 {% endschema %}
@@ -10,7 +16,7 @@
 <section class="py-20 bg-gray-50">
   <div class="container">
     <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold mb-4">Lo que dicen de nosotros</h2>
+      <h2 class="text-4xl font-bold mb-4">{{ section.settings.title }}</h2>
       <div class="flex justify-center gap-2 mb-2">
         {% for i in (1..5) %}
           <svg class="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 24 24">
