@@ -71,33 +71,46 @@
     </div>
 
     <!-- Upsells -->
-    <div class="upsells-container mb-6">
-      <h3 class="font-bold text-lg flex items-center gap-2 mb-3"><span>✨</span> Añade valor a tu pedido</h3>
+    {% if section.settings.show_upsell %}
+      <div class="upsells-container mb-6">
+        <h3 class="font-bold text-lg flex items-center gap-2 mb-3">
+          <span>✨</span> {{ section.settings.upsell_heading }}
+        </h3>
 
-      <!-- Upsell 1 -->
-      <div class="upsell-box" onclick="this.classList.toggle('active')" id="upsell-ebook">
-        <div class="flex items-center gap-4">
-          <div class="checkbox-square">
-            <svg
-              class="w-4 h-4 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style="width:16px; color:white;"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <h4 class="font-bold">E-book Exclusivo</h4>
-            <p class="text-sm text-gray-500">Guía completa de uso y mantenimiento</p>
-          </div>
-          <div class="text-right">
-            <p class="text-lg font-bold text-green-600" style="color:var(--color-green-600)">GRATIS</p>
+        <!-- Upsell Item -->
+        <div
+          class="upsell-box"
+          onclick="this.classList.toggle('active'); toggleUpsell('{{ section.settings.upsell_product }}')"
+          id="upsell-toggle"
+          data-upsell-id="{{ all_products[section.settings.upsell_product].selected_or_first_available_variant.id }}"
+        >
+          <div class="flex items-center gap-4">
+            <div class="checkbox-square">
+              <svg
+                class="w-4 h-4 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                style="width:16px; color:white;"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <h4 class="font-bold">{{ section.settings.upsell_title }}</h4>
+              <p class="text-sm text-gray-500">{{ section.settings.upsell_desc }}</p>
+            </div>
+            <div class="text-right">
+              {% if section.settings.upsell_price == blank or section.settings.upsell_price == '0' %}
+                <p class="text-lg font-bold text-green-600" style="color:var(--color-green-600)">GRATIS</p>
+              {% else %}
+                <p class="text-lg font-bold">{{ section.settings.upsell_price }}</p>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    {% endif %}
 
     <!-- CTA Button -->
     <button class="btn-primary" onclick="checkout()">
@@ -115,14 +128,15 @@
 </div>
 
 <script>
-  function selectBundle(id, price) {
-    // Visual Update
-    document.querySelectorAll('.bundle-option').forEach((el) => el.classList.remove('active'));
-    document.getElementById(`bundle-${id}`).classList.add('active');
+  let upsellVariantId = null;
 
-    // Update Button Text
-    const btn = document.getElementById('cta-text');
-    if (btn) btn.innerText = `AGREGAR AL CARRITO - ${price.toFixed(2)}€`;
+  function toggleUpsell(productId) {
+    const el = document.getElementById('upsell-toggle');
+    if (el.classList.contains('active')) {
+      upsellVariantId = el.dataset.upsellId;
+    } else {
+      upsellVariantId = null;
+    }
   }
 
   function checkout() {
@@ -135,6 +149,14 @@
 
     const variantId = activeOption.dataset.variantId;
 
+    // items array
+    const items = [{ id: variantId, quantity: 1 }];
+
+    // Add upsell if selected and valid
+    if (upsellVariantId) {
+      items.push({ id: upsellVariantId, quantity: 1 });
+    }
+
     // Add to cart
     const btn = document.querySelector('.btn-primary');
     const originalText = document.getElementById('cta-text').innerText;
@@ -143,7 +165,7 @@
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: [{ id: variantId, quantity: 1 }] }),
+      body: JSON.stringify({ items: items }),
     })
       .then(() => (window.location.href = '/checkout'))
       .catch((e) => {
